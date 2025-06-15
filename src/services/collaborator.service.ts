@@ -1,6 +1,6 @@
 import Collaborator, { ICollaborator } from "../models/collaborator.model";
 
-interface ICollaboratorService {
+export interface ICollaboratorService {
     createCollaborator(collaborator: ICollaborator): Promise<ICollaborator>;
     findCollaboratorById(id: string): Promise<ICollaborator | null>;
     findAllCollaborators(): Promise<ICollaborator[]>;
