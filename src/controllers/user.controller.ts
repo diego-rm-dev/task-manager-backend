@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { IUserService } from "../services/user.service";
+import { ApiError } from "../errors/error.handler";
 
 export interface IUserController {
     registerUser(req: Request, res: Response): Promise<void>;
@@ -15,28 +16,43 @@ export class UserController implements IUserController {
     
     registerUser = async (req: Request, res: Response): Promise<void> => {
         try {
+            const { email, password, name } = req.body;
+            
+            if (!email || !password || !name) {
+                throw ApiError.badRequest('Missing required fields', 'Please provide email, password, and name');
+            }
+
             const user = await this.userService.registerUser(req.body);
             res.status(201).json(user);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 
     loginUser = async (req: Request, res: Response): Promise<void> => {
         try {
-            const user = await this.userService.loginUser(req.body.email, req.body.password);
+            const { email, password } = req.body;
+            
+            if (!email || !password) {
+                throw ApiError.badRequest('Missing required fields', 'Please provide email and password');
+            }
+
+            const user = await this.userService.loginUser(email, password);
             res.status(200).json(user);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 
     findUserById = async (req: Request, res: Response): Promise<void> => {
         try {
             const user = await this.userService.findUserById(req.params.id);
+            if (!user) {
+                throw ApiError.notFound('User not found');
+            }
             res.status(200).json(user);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 
@@ -45,7 +61,7 @@ export class UserController implements IUserController {
             const users = await this.userService.findAllUsers();
             res.status(200).json(users);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 
@@ -54,7 +70,7 @@ export class UserController implements IUserController {
             const user = await this.userService.updateUser(req.params.id, req.body);
             res.status(200).json(user);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 
@@ -63,7 +79,7 @@ export class UserController implements IUserController {
             const user = await this.userService.deleteUser(req.params.id);
             res.status(200).json(user);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 }

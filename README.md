@@ -98,6 +98,62 @@ All endpoints require authentication except for the login/register endpoints.
 - `DELETE /collaborators/:id` - Remove collaborator
 
 ### Response Format
+
+### 🚫 Error Handling
+
+This API follows a consistent error handling pattern across all endpoints. When an error occurs, the response will have the following structure:
+
+```json
+{
+  "code": <HTTP Status Code>,
+  "message": <Error Message>,
+  "details": <Optional Error Details>,
+  "timestamp": <ISO 8601 Timestamp>
+}
+```
+
+#### Error Codes
+
+The API uses standard HTTP status codes with semantic meaning:
+
+- `400 (Bad Request)`: When the request is invalid or missing required fields
+- `401 (Unauthorized)`: When authentication is required but not provided
+- `403 (Forbidden)`: When the user doesn't have permission to perform the action
+- `404 (Not Found)`: When the requested resource doesn't exist
+- `409 (Conflict)`: When the operation conflicts with the current state
+- `500 (Internal Server Error)`: When an unexpected error occurs on the server
+
+#### Example Error Responses
+
+1. **Missing Required Fields**
+```json
+{
+  "code": 400,
+  "message": "Missing required fields",
+  "details": "Please provide title, description, status, and boardId",
+  "timestamp": "2025-06-16T06:44:55.000Z"
+}
+```
+
+2. **Resource Not Found**
+```json
+{
+  "code": 404,
+  "message": "Task not found",
+  "timestamp": "2025-06-16T06:44:55.000Z"
+}
+```
+
+3. **Internal Server Error**
+```json
+{
+  "code": 500,
+  "message": "Internal Server Error",
+  "timestamp": "2025-06-16T06:44:55.000Z"
+}
+```
+
+### Response Format
 All API responses follow this format:
 ```json
 {
