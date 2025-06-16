@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { IBoardService } from "../services/board.service";
+import { ApiError } from "../errors/error.handler";
 
 export interface IBoardController {
     createBoard(req: Request, res: Response): Promise<void>;
@@ -17,16 +18,19 @@ export class BoardController implements IBoardController {
             const board = await this.boardService.createBoard(req.body);
             res.status(201).json(board);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 
     findBoardById = async (req: Request, res: Response): Promise<void> => {
         try {
             const board = await this.boardService.findBoardById(req.params.id);
+            if (!board) {
+                throw ApiError.notFound('Board not found');
+            }
             res.status(200).json(board);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 
@@ -35,25 +39,37 @@ export class BoardController implements IBoardController {
             const boards = await this.boardService.findAllBoards();
             res.status(200).json(boards);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 
     updateBoard = async (req: Request, res: Response): Promise<void> => {
         try {
+            const { title } = req.body;
+            
+            if (!title) {
+                throw ApiError.badRequest('Missing required fields', 'Please provide title');
+            }
+
             const board = await this.boardService.updateBoard(req.params.id, req.body);
+            if (!board) {
+                throw ApiError.notFound('Board not found');
+            }
             res.status(200).json(board);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 
     deleteBoard = async (req: Request, res: Response): Promise<void> => {
         try {
             const board = await this.boardService.deleteBoard(req.params.id);
+            if (!board) {
+                throw ApiError.notFound('Board not found');
+            }
             res.status(200).json(board);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 }

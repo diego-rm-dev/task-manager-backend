@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ILabelService } from "../services/label.service";
+import { ApiError } from "../errors/error.handler";
 
 export interface ILabelController {
     createLabel(req: Request, res: Response): Promise<void>;
@@ -14,19 +15,28 @@ export class LabelController implements ILabelController {
 
     createLabel = async (req: Request, res: Response): Promise<void> => {
         try {
+            const { name, color } = req.body;
+            
+            if (!name || !color) {
+                throw ApiError.badRequest('Missing required fields', 'Please provide name and color');
+            }
+
             const label = await this.labelService.createLabel(req.body);
             res.status(201).json(label);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 
     findLabelById = async (req: Request, res: Response): Promise<void> => {
         try {
             const label = await this.labelService.findLabelById(req.params.id);
+            if (!label) {
+                throw ApiError.notFound('Label not found');
+            }
             res.status(200).json(label);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 
@@ -35,25 +45,31 @@ export class LabelController implements ILabelController {
             const labels = await this.labelService.findAllLabels();
             res.status(200).json(labels);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 
     updateLabel = async (req: Request, res: Response): Promise<void> => {
         try {
             const label = await this.labelService.updateLabel(req.params.id, req.body);
+            if (!label) {
+                throw ApiError.notFound('Label not found');
+            }
             res.status(200).json(label);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 
     deleteLabel = async (req: Request, res: Response): Promise<void> => {
         try {
             const label = await this.labelService.deleteLabel(req.params.id);
+            if (!label) {
+                throw ApiError.notFound('Label not found');
+            }
             res.status(200).json(label);
         } catch (error: any) {
-            res.status(500).json({ error: error.message });
+            throw error;
         }
     }
 }
