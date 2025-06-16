@@ -1,12 +1,7 @@
-import mongoose, { Document, Model, Schema } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 import User from "./user.model";
 import Task from "./task.model";
-
-export interface IComment extends Document {
-    content: string;
-    user: mongoose.Schema.Types.ObjectId;
-    task: mongoose.Schema.Types.ObjectId;
-}
+import { IComment } from "../interfaces/comment.interface";
 
 const CommentSchema = new Schema({
     content: { type: String, required: true },

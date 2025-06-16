@@ -1,63 +1,86 @@
-import Label, { ILabel } from "../models/label.model";
+import { ILabel, ILabelResponse } from "../interfaces/label.interface";
+import Label from "../models/label.model";
 
 export interface ILabelService {
-    createLabel(label: ILabel): Promise<ILabel>;
-    findLabelById(id: string): Promise<ILabel | null>;
-    findAllLabels(): Promise<ILabel[]>;
-    updateLabel(id: string, label: ILabel): Promise<ILabel | null>;
-    deleteLabel(id: string): Promise<ILabel | null>;
+    createLabel(label: ILabel): Promise<ILabelResponse>;
+    findLabelById(id: string): Promise<ILabelResponse | null>;
+    findAllLabels(): Promise<ILabelResponse[]>;
+    updateLabel(id: string, label: ILabel): Promise<ILabelResponse | null>;
+    deleteLabel(id: string): Promise<ILabelResponse | null>;
 }
 
 export class LabelService implements ILabelService {
     constructor(private readonly labelModel: typeof Label) {}
 
-    public async createLabel(label: ILabel): Promise<ILabel> {
+    createLabel = async (label: ILabel): Promise<ILabelResponse> => {
         try {
-            return await this.labelModel.create(label);
+            const newLabel = await this.labelModel.create(label);
+            return {
+                id: newLabel._id,
+                name: newLabel.name,
+                color: newLabel.color,
+            };
         } catch (error: any) {
             throw new Error(`Creation failed: ${error.message}`);
         }
     }
 
-    public async findLabelById(id: string): Promise<ILabel | null> {
+    findLabelById = async (id: string): Promise<ILabelResponse | null> => {
         try {
             const label = await this.labelModel.findById(id);
             if (!label) {
                 throw new Error("Label not found");
             }
-            return label;
+            return {
+                id: label._id,
+                name: label.name,
+                color: label.color,
+            };
         } catch (error: any) {
             throw new Error(`Finding label by ID failed: ${error.message}`);
         }
     }
 
-    public async findAllLabels(): Promise<ILabel[]> {
+    findAllLabels = async (): Promise<ILabelResponse[]> => {
         try {
-            return await this.labelModel.find();
+            const labels = await this.labelModel.find();
+            return labels.map((label: ILabel) => ({
+                id: label._id,
+                name: label.name,
+                color: label.color,
+            })) as ILabelResponse[];
         } catch (error: any) {
             throw new Error(`Finding all labels failed: ${error.message}`);
         }
     }
 
-    public async updateLabel(id: string, label: ILabel): Promise<ILabel | null> {
+    updateLabel = async (id: string, label: ILabel): Promise<ILabelResponse | null> => {
         try {
             const updatedLabel = await this.labelModel.findByIdAndUpdate(id, label, { new: true });
             if (!updatedLabel) {
                 throw new Error("Label not found");
             }
-            return updatedLabel;
+            return {
+                id: updatedLabel._id,
+                name: updatedLabel.name,
+                color: updatedLabel.color,
+            };
         } catch (error: any) {
             throw new Error(`Updating label failed: ${error.message}`);
         }
     }
 
-    public async deleteLabel(id: string): Promise<ILabel | null> {
+    deleteLabel = async (id: string): Promise<ILabelResponse | null> => {
         try {
             const deletedLabel = await this.labelModel.findByIdAndDelete(id);
             if (!deletedLabel) {
                 throw new Error("Label not found");
             }
-            return deletedLabel;
+            return {
+                id: deletedLabel._id,
+                name: deletedLabel.name,
+                color: deletedLabel.color,
+            };
         } catch (error: any) {
             throw new Error(`Deleting label failed: ${error.message}`);
         }

@@ -1,63 +1,91 @@
-import Comment, { IComment } from "../models/comment.model";
+import { IComment, ICommentResponse } from "../interfaces/comment.interface";
+import Comment from "../models/comment.model";
 
 export interface ICommentService {
-    createComment(comment: IComment): Promise<IComment>;
-    findCommentById(id: string): Promise<IComment | null>;
-    findAllComments(): Promise<IComment[]>;
-    updateComment(id: string, comment: IComment): Promise<IComment | null>;
-    deleteComment(id: string): Promise<IComment | null>;
+    createComment(comment: IComment): Promise<ICommentResponse>;
+    findCommentById(id: string): Promise<ICommentResponse | null>;
+    findAllComments(): Promise<ICommentResponse[]>;
+    updateComment(id: string, comment: IComment): Promise<ICommentResponse | null>;
+    deleteComment(id: string): Promise<ICommentResponse | null>;
 }
 
 export class CommentService implements ICommentService {
     constructor(private readonly commentModel: typeof Comment) {}
 
-    public async createComment(comment: IComment): Promise<IComment> {
+    createComment = async (comment: IComment): Promise<ICommentResponse> => {
         try {
-            return await this.commentModel.create(comment);
+            const newComment = await this.commentModel.create(comment);
+            return {
+                id: newComment._id,
+                content: newComment.content,
+                user: newComment.user,
+                task: newComment.task,
+            };
         } catch (error: any) {
             throw new Error(`Creation failed: ${error.message}`);
         }
     }
 
-    public async findCommentById(id: string): Promise<IComment | null> {
+    findCommentById = async (id: string): Promise<ICommentResponse | null> => {
         try {
-            const comment = await this.commentModel.findById(id);
+            const comment = await this.commentModel.findById(id).populate("user", "name").populate("task", "name");
             if (!comment) {
                 throw new Error("Comment not found");
             }
-            return comment;
+            return {
+                id: comment._id,
+                content: comment.content,
+                user: comment.user,
+                task: comment.task,
+            };
         } catch (error: any) {
             throw new Error(`Finding comment by ID failed: ${error.message}`);
         }
     }
 
-    public async findAllComments(): Promise<IComment[]> {
+    findAllComments = async (): Promise<ICommentResponse[]> => {
         try {
-            return await this.commentModel.find();
+            const comments = await this.commentModel.find().populate("user", "name").populate("task", "name");
+            return comments.map((comment: IComment) => ({
+                id: comment._id,
+                content: comment.content,
+                user: comment.user,
+                task: comment.task,
+            })) as ICommentResponse[];
         } catch (error: any) {
             throw new Error(`Finding all comments failed: ${error.message}`);
         }
     }
 
-    public async updateComment(id: string, comment: IComment): Promise<IComment | null> {
+    updateComment = async (id: string, comment: IComment): Promise<ICommentResponse | null> => {
         try {
-            const updatedComment = await this.commentModel.findByIdAndUpdate(id, comment, { new: true });
+            const updatedComment = await this.commentModel.findByIdAndUpdate(id, comment, { new: true }).populate("user", "name").populate("task", "name");
             if (!updatedComment) {
                 throw new Error("Comment not found");
             }
-            return updatedComment;
+            return {
+                id: updatedComment._id,
+                content: updatedComment.content,
+                user: updatedComment.user,
+                task: updatedComment.task,
+            };
         } catch (error: any) {
             throw new Error(`Updating comment failed: ${error.message}`);
         }
     }
 
-    public async deleteComment(id: string): Promise<IComment | null> {
+    deleteComment = async (id: string): Promise<ICommentResponse | null> => {
         try {
-            const deletedComment = await this.commentModel.findByIdAndDelete(id);
+            const deletedComment = await this.commentModel.findByIdAndDelete(id).populate("user", "name").populate("task", "name");
             if (!deletedComment) {
                 throw new Error("Comment not found");
             }
-            return deletedComment;
+            return {
+                id: deletedComment._id,
+                content: deletedComment.content,
+                user: deletedComment.user,
+                task: deletedComment.task,
+            };
         } catch (error: any) {
             throw new Error(`Deleting comment failed: ${error.message}`);
         }

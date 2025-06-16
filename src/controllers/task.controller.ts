@@ -12,7 +12,7 @@ export interface ITaskController {
 export class TaskController implements ITaskController {
     constructor(private readonly taskService: ITaskService) {}
 
-    public async createTask(req: Request, res: Response): Promise<void> {
+    createTask = async (req: Request, res: Response): Promise<void> => {
         try {
             const task = await this.taskService.createTask(req.body);
             res.status(201).json(task);
@@ -21,7 +21,7 @@ export class TaskController implements ITaskController {
         }
     }
 
-    public async findTaskById(req: Request, res: Response): Promise<void> {
+    findTaskById = async (req: Request, res: Response): Promise<void> => {
         try {
             const task = await this.taskService.findTaskById(req.params.id);
             res.status(200).json(task);
@@ -30,7 +30,7 @@ export class TaskController implements ITaskController {
         }
     }
 
-    public async findAllTasks(req: Request, res: Response): Promise<void> {
+    findAllTasks = async (req: Request, res: Response): Promise<void> => {
         try {
             const tasks = await this.taskService.findAllTasks();
             res.status(200).json(tasks);
@@ -39,7 +39,7 @@ export class TaskController implements ITaskController {
         }
     }
 
-    public async updateTask(req: Request, res: Response): Promise<void> {
+    updateTask = async (req: Request, res: Response): Promise<void> => {
         try {
             const task = await this.taskService.updateTask(req.params.id, req.body);
             res.status(200).json(task);
@@ -48,7 +48,7 @@ export class TaskController implements ITaskController {
         }
     }
 
-    public async deleteTask(req: Request, res: Response): Promise<void> {
+    deleteTask = async (req: Request, res: Response): Promise<void> => {
         try {
             const task = await this.taskService.deleteTask(req.params.id);
             res.status(200).json(task);

@@ -1,12 +1,7 @@
-import mongoose, { Document, Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import User from "./user.model";
 import Board from "./board.model";
-
-export interface ICollaborator extends Document {
-    user: mongoose.Schema.Types.ObjectId;
-    board: mongoose.Schema.Types.ObjectId;
-    role: 'owner' | 'editor' | 'viewer';
-}
+import { ICollaborator } from "../interfaces/collaborator.interface";
 
 const CollaboratorSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: User, required: true },
