@@ -1,20 +1,9 @@
-import mongoose, { Document, Model, Schema } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 
 import User from "./user.model";
 import Board from "./board.model";
 import Label from "./label.model";
-
-export interface ITask extends Document {
-    name: string;
-    description: string;
-    owner: Schema.Types.ObjectId;
-    board: Schema.Types.ObjectId;
-    status: string;
-    start_date: Date;
-    due_date: Date;
-    priority: string;
-    label: Schema.Types.ObjectId;
-}
+import { ITask } from "../interfaces/task.interface";
 
 const TaskSchema = new Schema({
     name: { type: String, required: true },

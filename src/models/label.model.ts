@@ -1,9 +1,5 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
-
-export interface ILabel extends Document {
-    name: string;
-    color: string;
-}
+import { ILabel } from "../interfaces/label.interface";
 
 const LabelSchema = new Schema({
     name: { type: String, required: true },

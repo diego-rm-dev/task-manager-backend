@@ -1,63 +1,85 @@
 import Board, { IBoard } from "../models/board.model";
+import { IBoardResponse } from "../interfaces/board.interface";
 
 export interface IBoardService {
-    createBoard(board: IBoard): Promise<IBoard>;
-    findBoardById(id: string): Promise<IBoard | null>;
-    findAllBoards(): Promise<IBoard[]>;
-    updateBoard(id: string, board: IBoard): Promise<IBoard | null>;
-    deleteBoard(id: string): Promise<IBoard | null>;
+    createBoard(board: IBoard): Promise<IBoardResponse>;
+    findBoardById(id: string): Promise<IBoardResponse | null>;
+    findAllBoards(): Promise<IBoardResponse[]>;
+    updateBoard(id: string, board: IBoard): Promise<IBoardResponse | null>;
+    deleteBoard(id: string): Promise<IBoardResponse | null>;
 }
 
 export class BoardService implements IBoardService {
     constructor(private readonly boardModel: typeof Board) {}
     
-    public async createBoard(board: IBoard): Promise<IBoard> {
+    createBoard = async (board: IBoard): Promise<IBoardResponse> => {
         try {
-            return await this.boardModel.create(board);
+            const newBoard = await this.boardModel.create(board);
+            return {
+                name: newBoard.name,
+                owner: newBoard.owner,
+                description: newBoard.description,
+                visibility: newBoard.visibility,
+            };
         } catch (error: any) {
             throw new Error(`Creation failed: ${error.message}`);
         }
     }
 
-    public async findBoardById(id: string): Promise<IBoard | null> {
+    findBoardById = async (id: string): Promise<IBoardResponse | null> => {
         try {
-            const board = await this.boardModel.findById(id);
+            const board = await this.boardModel.findById(id).populate("owner", "name email");
             if (!board) {
                 throw new Error("Board not found");
             }
-            return board;
+            return {
+                name: board.name,
+                owner: board.owner,
+                description: board.description,
+                visibility: board.visibility,
+            };
         } catch (error: any) {
             throw new Error(`Finding board by ID failed: ${error.message}`);
         }
     }
 
-    public async findAllBoards(): Promise<IBoard[]> {
+    findAllBoards = async (): Promise<IBoardResponse[]> => {
         try {
-            return await this.boardModel.find();
+            return await this.boardModel.find().populate("owner", "name email");
         } catch (error: any) {
             throw new Error(`Finding all boards failed: ${error.message}`);
         }
     }
 
-    public async updateBoard(id: string, board: IBoard): Promise<IBoard | null> {
+    updateBoard = async (id: string, board: IBoard): Promise<IBoardResponse | null> => {
         try {
-            const updatedBoard = await this.boardModel.findByIdAndUpdate(id, board, { new: true });
+            const updatedBoard = await this.boardModel.findByIdAndUpdate(id, board, { new: true }).populate("owner", "name email");
             if (!updatedBoard) {
                 throw new Error("Board not found");
             }
-            return updatedBoard;
+            return {
+                name: updatedBoard.name,
+                owner: updatedBoard.owner,
+                description: updatedBoard.description,
+                visibility: updatedBoard.visibility,
+            };
         } catch (error: any) {
             throw new Error(`Updating board failed: ${error.message}`);
         }
     }
 
-    public async deleteBoard(id: string): Promise<IBoard | null> {
+    deleteBoard = async (id: string): Promise<IBoardResponse | null> => {
         try {
-            const deletedBoard = await this.boardModel.findByIdAndDelete(id);
+            const deletedBoard = await this.boardModel.findByIdAndDelete(id).populate("owner", "name email");
             if (!deletedBoard) {
                 throw new Error("Board not found");
             }
-            return deletedBoard;
+            return {
+                name: deletedBoard.name,
+                owner: deletedBoard.owner,
+                description: deletedBoard.description,
+                visibility: deletedBoard.visibility,
+            };
         } catch (error: any) {
             throw new Error(`Deleting board failed: ${error.message}`);
         }

@@ -12,7 +12,7 @@ export interface ILabelController {
 export class LabelController implements ILabelController {
     constructor(private readonly labelService: ILabelService) {}
 
-    public async createLabel(req: Request, res: Response): Promise<void> {
+    createLabel = async (req: Request, res: Response): Promise<void> => {
         try {
             const label = await this.labelService.createLabel(req.body);
             res.status(201).json(label);
@@ -21,7 +21,7 @@ export class LabelController implements ILabelController {
         }
     }
 
-    public async findLabelById(req: Request, res: Response): Promise<void> {
+    findLabelById = async (req: Request, res: Response): Promise<void> => {
         try {
             const label = await this.labelService.findLabelById(req.params.id);
             res.status(200).json(label);
@@ -30,7 +30,7 @@ export class LabelController implements ILabelController {
         }
     }
 
-    public async findAllLabels(req: Request, res: Response): Promise<void> {
+    findAllLabels = async (req: Request, res: Response): Promise<void> => {
         try {
             const labels = await this.labelService.findAllLabels();
             res.status(200).json(labels);
@@ -39,7 +39,7 @@ export class LabelController implements ILabelController {
         }
     }
 
-    public async updateLabel(req: Request, res: Response): Promise<void> {
+    updateLabel = async (req: Request, res: Response): Promise<void> => {
         try {
             const label = await this.labelService.updateLabel(req.params.id, req.body);
             res.status(200).json(label);
@@ -48,7 +48,7 @@ export class LabelController implements ILabelController {
         }
     }
 
-    public async deleteLabel(req: Request, res: Response): Promise<void> {
+    deleteLabel = async (req: Request, res: Response): Promise<void> => {
         try {
             const label = await this.labelService.deleteLabel(req.params.id);
             res.status(200).json(label);
